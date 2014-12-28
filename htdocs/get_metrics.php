@@ -22,7 +22,7 @@ $controller = new HttpController(
 );
 
 header('Content-Type: application/json');
-echo json_encode($controller->handleRequest($_GET), JSON_PRETTY_PRINT);
+echo json_encode($controller->handleRequest($_GET));
 
 
 
