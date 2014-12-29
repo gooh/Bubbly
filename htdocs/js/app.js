@@ -32,11 +32,26 @@ d3.json('/get_metrics.php' + queryString, function (json) {
     chart.axes[0].timePeriod = d3.time.days;
     chart.axes[0].timePeriod.timeInterval = 1;
     chart.axes[0].tickFormat = '%x';
-
+    chart.axes[0].showGridlines = true;
     chart.addSeries(["message", "id", "files", "author"], dimple.plot.bubble);
+
+    // average the ratios per day
+    var averagesPerDay = [];
+    data.forEach(function(commit) {
+        averagesPerDay.push({
+            "date": new Date(commit.date.getFullYear(), commit.date.getMonth(), commit.date.getDate() + 1, 0,0,0,0),
+            "ratio": commit.ratio
+        });
+    });
+    chart.addSeries(['Average Ratio'], dimple.plot.line);
+    chart.series[1].data = averagesPerDay;
+    chart.series[1].aggregate = dimple.aggregateMethod.avg;
+    chart.series[1].lineMarkers = true;
+
     // draw legend
     var myLegend = chart.addLegend(width - 150, 75, 225, 425);
     chart.draw(transitionTime);
+    // make all labels vertical
     chart.axes[0].shapes.selectAll('text').attr('transform', 'translate(14,35)rotate(90)');
 
     // This is a critical step.  By doing this we orphan the legend. This
@@ -48,6 +63,9 @@ d3.json('/get_metrics.php' + queryString, function (json) {
     var filterValues = dimple.getUniqueValues(data, "author");
     // Add a click event to each author name
     myLegend.shapes.selectAll("text").on("click", function (e) {
+
+        if (e.key === 'Average Ratio') return;
+
         // This indicates whether the item is already visible or not
         var hide = false;
         var newFilters = [];
@@ -70,10 +88,25 @@ d3.json('/get_metrics.php' + queryString, function (json) {
         filterValues = newFilters;
         // Filter the data
         chart.data = dimple.filterData(data, "author", filterValues);
+
+        // average the ratios per day
+        var filteredAveragesPerDay = [];
+        chart.data.forEach(function(commit) {
+            if (hide && commit.author === e.key) {
+                // dont include
+            } else {
+                filteredAveragesPerDay.push({
+                    "date": new Date(commit.date.getFullYear(), commit.date.getMonth(), commit.date.getDate() + 1, 0, 0, 0, 0),
+                    "ratio": commit.ratio
+                });
+            }
+        });
+        chart.series[1].data = filteredAveragesPerDay;
         chart.draw(transitionTime);
+
     });
 
-    // average the ratios
+    // average the ratios per author
     var averages = {};
     data.forEach(function(commit) {
         if (!averages[commit.author]) {
