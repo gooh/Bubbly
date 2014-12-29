@@ -36,7 +36,7 @@ You should see a page showing something like the image below:
 
 ![Bubbly screenshot](https://i.stack.imgur.com/AuKCi.png)
 
-Mousing over the bubbles will give you more detailed information about the 
+Hovering over the bubbles will give you more detailed information about the 
 particular commit. You can also deselect committers by clicking on the legend 
 (not shown in the screenshot). There is also a Bar chart listing all committers
 by their average test code ratio.
