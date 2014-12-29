@@ -25,12 +25,12 @@ Once you have configured Bubbly, open the shell, `cd` into htdocs and run
 browser and navigate to `http://127.0.0.1:8080` to show the visualization. Of 
 course, you can also set it up with any other webserver capable of running PHP.
  
-By default Bubbly will only visualize the first 50 commits in your repository. 
+By default Bubbly will only visualize the first 500 commits in your repository. 
 But you can request any amount by supplying start and end in the query string, e.g. 
 
     http://127.0.0.1:8080?start=50&end=300
    
-The above would visualize the commits from HEAD~50 to HEAD~300.
+The above would visualize the 250 commits from HEAD~50 to HEAD~300.
 
 You should see a page showing something like the image below:
 

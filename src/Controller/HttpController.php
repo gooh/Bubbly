@@ -27,7 +27,7 @@ class HttpController
             header('Status: 200 OK', true);
             return $this->commitLog->findByStartAndEnd(
                 isset($request['start']) ? $request['start'] : 0,
-                isset($request['end']) ? $request['end'] : 50
+                isset($request['end']) ? $request['end'] : 500
             );
         } catch (\Exception $e) {
             header('Status: 500 Internal Server Error', true);
