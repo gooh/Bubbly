@@ -15,8 +15,6 @@ d3.json('/get_metrics.php' + queryString, function (json) {
         });
     });
 
-    console.log(data);
-
     // configure the bubble chart
     var svg = dimple.newSvg("#test-ratio-per-commit", "95%", "95%");
     var chart = new dimple.chart(svg, data);
@@ -27,6 +25,7 @@ d3.json('/get_metrics.php' + queryString, function (json) {
     chart.axes[0].timeField = "date";
     chart.axes[0].timePeriod = d3.time.days;
     chart.axes[0].timePeriod.timeInterval = 1;
+
     chart.addSeries(["message", "id", "files", "author"], dimple.plot.bubble);
     // draw legend
     var myLegend = chart.addLegend("100%,10px", 100, 60, 300, "Left");
@@ -95,5 +94,4 @@ d3.json('/get_metrics.php' + queryString, function (json) {
     chart2.axes[1].title = 'average ratio';
     chart2.addSeries(["author", "commits", "average"], dimple.plot.bar);
     chart2.draw();
-    console.log(chart2);
 });
