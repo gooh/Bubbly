@@ -1,7 +1,13 @@
 var queryString = location.href.split('?');
 queryString = (queryString[1] !== undefined) ? '?' + queryString[1] : '';
 
-d3.json('/get_metrics.php' + queryString, function (json) {
+d3.json('/get_metrics.php' + queryString, function (err, json) {
+
+    if (json === undefined) {
+        alert(JSON.parse(err.response).error);
+        return;
+    }
+
     var data = [];
     json.commits.forEach(function (commit) {
         data.push({
@@ -14,6 +20,11 @@ d3.json('/get_metrics.php' + queryString, function (json) {
             'files': commit.changedFiles.changedFiles.length
         });
     });
+
+    if (data.length < 2) {
+        alert('You need to have at least two commits in the queried range');
+        return;
+    }
 
     var transitionTime = 1000;
     var margin = {top: 75, right: 75, bottom: 75, left: 75};
