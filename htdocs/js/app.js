@@ -30,6 +30,20 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     var margin = {top: 75, right: 75, bottom: 75, left: 75};
     var width = parseInt(d3.select('#test-ratio-per-commit').style('width'), 10)
         - margin.left - margin.right;
+    
+    var timePeriod = d3.time.days;
+    var firstDate = moment(data[0].date);
+    var lastDate = moment(data[data.length - 1].date);
+    var diff = firstDate.diff(lastDate, 'days');
+    if (diff > width/4) {
+        timePeriod = d3.time.weeks;
+        diff = firstDate.diff(lastDate, 'weeks');
+        if (diff > width/4) {
+            timePeriod = d3.time.years;
+        } else {
+            timePeriod = d3.time.months;
+        }
+    }
 
     // configure the bubble chart
     var svg = dimple.newSvg("#test-ratio-per-commit", "95%", "95%");
@@ -40,7 +54,7 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     chart.addLogAxis("z", "size", .1);
     chart.axes[0].timeField = "date";
     chart.axes[0].title = null;
-    chart.axes[0].timePeriod = d3.time.days;
+    chart.axes[0].timePeriod = timePeriod;
     chart.axes[0].timePeriod.timeInterval = 1;
     chart.axes[0].tickFormat = '%x';
     chart.axes[0].showGridlines = true;
