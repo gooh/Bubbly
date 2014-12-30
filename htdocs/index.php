@@ -19,6 +19,7 @@
             }
         </style>
         <script src="/js/jquery.min.js"></script>
+        <script src="/js/moment.min.js"></script>
         <script src="/js/d3.min.js"></script>
         <script src="/js/dimple.v2.1.0.min.js"></script>
         <script src="/js/app.js"></script>
