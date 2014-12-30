@@ -34,12 +34,17 @@ The above would visualize the 250 commits from HEAD~50 to HEAD~300.
 
 You should see a page showing something like the image below:
 
-![Bubbly screenshot](https://i.stack.imgur.com/AuKCi.png)
+[Bubbly Screenshot 1](http://i.imgur.com/MsmsMnT.png)
 
 Hovering over the bubbles will give you more detailed information about the 
-particular commit. You can also deselect committers by clicking on the legend 
-(not shown in the screenshot). There is also a Bar chart listing all committers
-by their average test code ratio.
+particular commit. You can also deselect committers by clicking on the legend. 
+
+The horizontal line is the average commit ratio over all shown commits. The 
+filled line bar shows average commit ratio per day.
+
+There is also a Bar chart listing all committers by their average test code ratio.
+
+[Bubbly Screenshot 2](http://i.imgur.com/v8ma9ja.png)
 
 ## System requirements
 
