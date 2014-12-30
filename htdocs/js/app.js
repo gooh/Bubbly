@@ -26,6 +26,10 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
         return;
     }
 
+    data.sort(function(a,b) {
+        return a.date > b.date;
+    });
+
     var transitionTime = 1000;
     var margin = {top: 75, right: 75, bottom: 75, left: 75};
     var width = parseInt(d3.select('#test-ratio-per-commit').style('width'), 10)
@@ -34,11 +38,11 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     var timePeriod = d3.time.days;
     var firstDate = moment(data[0].date);
     var lastDate = moment(data[data.length - 1].date);
-    var diff = firstDate.diff(lastDate, 'days');
+    var diff = lastDate.diff(firstDate, 'days');
     if (diff > width/25) {
-        diff = firstDate.diff(lastDate, 'weeks');
+        diff = lastDate.diff(firstDate, 'weeks');
         if (diff > width/25) {
-            diff = firstDate.diff(lastDate, 'months');
+            diff = lastDate.diff(firstDate, 'months');
             if (diff > width/25) {
                 timePeriod = d3.time.years;
             } else {
@@ -62,20 +66,30 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     chart.axes[0].timePeriod.timeInterval = 1;
     chart.axes[0].tickFormat = '%x';
     chart.axes[0].showGridlines = true;
-    chart.addSeries(["message", "id", "files", "author"], dimple.plot.bubble);
 
     // average the ratios per day
     var averagesPerDay = [];
+    var baseLineRatio = 0;
     data.forEach(function(commit) {
         averagesPerDay.push({
             "date": new Date(commit.date.getFullYear(), commit.date.getMonth(), commit.date.getDate() + 1, 0,0,0,0),
             "ratio": commit.ratio
         });
+        baseLineRatio += commit.ratio;
     });
-    chart.addSeries(['Average Ratio'], dimple.plot.line);
-    chart.series[1].data = averagesPerDay;
-    chart.series[1].aggregate = dimple.aggregateMethod.avg;
-    chart.series[1].lineMarkers = true;
+    baseLineRatio =  baseLineRatio / averagesPerDay.length;
+    chart.addSeries(['Average Ratio'], dimple.plot.area);
+    chart.series[0].data = averagesPerDay;
+    chart.series[0].aggregate = dimple.aggregateMethod.avg;
+    chart.series[0].lineMarkers = true;
+
+    chart.addSeries(['Baseline'], dimple.plot.line);
+    chart.series[1].data = [
+        {'date': firstDate.toDate(), 'ratio': baseLineRatio},
+        {'date': lastDate.add(1, 'day').toDate(), 'ratio': baseLineRatio}
+    ];
+
+    chart.addSeries(["message", "id", "files", "author"], dimple.plot.bubble);
 
     // draw legend
     var myLegend = chart.addLegend(width - 150, 75, 225, 425);
@@ -93,7 +107,7 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     // Add a click event to each author name
     myLegend.shapes.selectAll("text").on("click", function (e) {
 
-        if (e.key === 'Average Ratio') return;
+        if (e.key === 'Average Ratio' || e.key === 'Baseline') return;
 
         // This indicates whether the item is already visible or not
         var hide = false;
@@ -120,6 +134,7 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
 
         // average the ratios per day
         var filteredAveragesPerDay = [];
+        var filteredBaseLineRatio = 0;
         chart.data.forEach(function(commit) {
             if (hide && commit.author === e.key) {
                 // dont include
@@ -128,9 +143,24 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
                     "date": new Date(commit.date.getFullYear(), commit.date.getMonth(), commit.date.getDate() + 1, 0, 0, 0, 0),
                     "ratio": commit.ratio
                 });
+                filteredBaseLineRatio += commit.ratio;
             }
         });
-        chart.series[1].data = filteredAveragesPerDay;
+        filteredBaseLineRatio = filteredBaseLineRatio / filteredAveragesPerDay.length;
+        filteredAveragesPerDay.sort(function(a,b) {
+            return a.date > b.date;
+        });
+        chart.series[0].data = filteredAveragesPerDay;
+        chart.series[1].data = [
+            {
+                'date': moment(filteredAveragesPerDay[0].date).subtract(1, 'day').toDate(),
+                'ratio': filteredBaseLineRatio
+            },
+            {
+                'date': filteredAveragesPerDay[filteredAveragesPerDay.length - 1].date,
+                'ratio': filteredBaseLineRatio
+            }
+        ];
         chart.draw(transitionTime);
 
     });
@@ -143,12 +173,14 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
                 'author': commit.author,
                 'ratio': 0,
                 'commits': 0,
-                'average': 0
+                'average': 0,
+                'delta': 0
             };
         }
         averages[commit.author].ratio += parseFloat(commit.ratio);
         averages[commit.author].commits++;
         averages[commit.author].average = averages[commit.author].ratio / averages[commit.author].commits;
+        averages[commit.author].delta = averages[commit.author].average - baseLineRatio;
     });
     var data2 = [];
     for (var commit in averages) {
@@ -162,6 +194,6 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     chart2.addMeasureAxis("y", "average");
     chart2.axes[1].tickFormat = ',';
     chart2.axes[1].title = 'average ratio';
-    chart2.addSeries(["author", "commits", "average"], dimple.plot.bar);
+    chart2.addSeries(["author", "commits", "average", "delta"], dimple.plot.bar);
     chart2.draw(transitionTime);
 });
