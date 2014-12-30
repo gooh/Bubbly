@@ -30,18 +30,22 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     var margin = {top: 75, right: 75, bottom: 75, left: 75};
     var width = parseInt(d3.select('#test-ratio-per-commit').style('width'), 10)
         - margin.left - margin.right;
-    
+
     var timePeriod = d3.time.days;
     var firstDate = moment(data[0].date);
     var lastDate = moment(data[data.length - 1].date);
     var diff = firstDate.diff(lastDate, 'days');
-    if (diff > width/4) {
-        timePeriod = d3.time.weeks;
+    if (diff > width/25) {
         diff = firstDate.diff(lastDate, 'weeks');
-        if (diff > width/4) {
-            timePeriod = d3.time.years;
+        if (diff > width/25) {
+            diff = firstDate.diff(lastDate, 'months');
+            if (diff > width/25) {
+                timePeriod = d3.time.years;
+            } else {
+                timePeriod = d3.time.months;
+            }
         } else {
-            timePeriod = d3.time.months;
+            timePeriod = d3.time.weeks;
         }
     }
 
