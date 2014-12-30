@@ -6,11 +6,11 @@ class CommitLogParser
      * @var array
      */
     private $patterns = [
-        'onCommit' => '(^commit\s+(?<commit>[a-z0-9]+)\n$)',
-        'onAuthor' => '(^Author:\s+(?<author>.+)\n$)',
-        'onDate' => '(^Date:\s+(?<date>.+)\n$)',
+        'onCommit' => '(^Commit:(?<commit>[a-z0-9]+)\n$)',
+        'onAuthor' => '(^Author:(?<author>.+)\n$)',
+        'onDate' => '(^Date:(?<date>.+)\n$)',
         'onFile' => '(^(?<additions>\d+)\t(?<deletions>\d+)\t(?<file>.+)\n$)',
-        'onMessage' => '(^(?<message>.+\n)$)'
+        'onMessage' => '(^Subject:(?<message>.+)\n$)'
     ];
 
     /**

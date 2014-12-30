@@ -10,6 +10,11 @@ class GitShowNumStat implements \IteratorAggregate
     private $pathToRepo;
 
     /**
+     * @var string
+     */
+    private $prettyPrint = 'format:Commit:%H%nAuthor:%an%nDate:%ai%nSubject:%s';
+
+    /**
      * @var CommitRange
      */
     private $commitRange;
@@ -37,12 +42,19 @@ class GitShowNumStat implements \IteratorAggregate
      */
     public function getIterator()
     {
-        return Process::createReadOnly(
-            sprintf(
-                'git -C %s show --numstat %s',
-                escapeshellarg($this->pathToRepo),
-                $this->commitRange
-            )
+        return Process::createReadOnly($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf(
+            'git -C %s show --pretty="%s" --numstat %s',
+            escapeshellarg($this->pathToRepo),
+            $this->prettyPrint,
+            $this->commitRange
         );
     }
 }
