@@ -24,13 +24,13 @@ class HttpController
     public function handleRequest(array $request)
     {
         try {
-            header('Status: 200 OK', true);
+            header('HTTP/1.0 200 OK', true, 200);
             return $this->commitLog->findByStartAndEnd(
                 isset($request['start']) ? $request['start'] : 0,
                 isset($request['end']) ? $request['end'] : 500
             );
         } catch (\Exception $e) {
-            header('Status: 500 Internal Server Error', true);
+            header('HTTP/1.0 500 Internal Server Error', true, 500);
             return ['error' => $e->getMessage()];
         }
     }
