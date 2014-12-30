@@ -10,12 +10,12 @@ class ChangedFile implements \JsonSerializable
     /**
      * @var int
      */
-    private $additions;
+    private $additions = 0;
 
     /**
      * @var int
      */
-    private $deletions;
+    private $deletions = 0;
 
     /**
      * @var boolean

@@ -10,17 +10,17 @@ class ChangedFiles implements \IteratorAggregate, \JsonSerializable
     /**
      * @var int
      */
-    private $changes;
+    private $changes = 0;
 
     /**
      * @var int
      */
-    private $testFileChanges;
+    private $testFileChanges = 0;
 
     /**
      * @var float
      */
-    private $testCodeRatio;
+    private $testCodeRatio = 0.0;
 
     /**
      * @return \ArrayIterator|ChangedFile[]
