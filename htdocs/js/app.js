@@ -13,8 +13,8 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
         data.push({
             'id': commit.commitHash,
             'date': new Date(commit.date * 1000),
-            'author': commit.author.split('<')[0],
-            'message': commit.message.match('.+?\n'),
+            'author': commit.author,
+            'message': commit.message,
             'ratio': commit.changedFiles.testCodeRatio,
             'size': commit.changedFiles.changes,
             'files': commit.changedFiles.changedFiles.length
