@@ -196,4 +196,48 @@ d3.json('/get_metrics.php' + queryString, function (err, json) {
     chart2.axes[1].title = 'average ratio';
     chart2.addSeries(["author", "commits", "average", "delta"], dimple.plot.bar);
     chart2.draw(transitionTime);
+
+    var CommitSizeHeap = function(size) {
+        return {
+            'data': [],
+            'add': function(commit) {
+                if (!this.data[commit.author]) {
+                    this.data[commit.author] = [];
+                }
+                this.data[commit.author].push(commit);
+                this.data[commit.author].sort(function(a, b) {
+                    return b.size - a.size;
+                });
+                this.data[commit.author] = this.data[commit.author].slice(0, size);
+            },
+            'toArray': function() {
+                var arr = [];
+                for (var authors in this.data) {
+                    this.data[authors].forEach(function(commit) {
+                        arr.push(commit);
+                    });
+                };
+
+                return arr;
+            }
+        };
+    };
+
+    var data3 = new CommitSizeHeap(10);
+    data.forEach(function (commit) {
+        data3.add(commit);
+    });
+
+    // configure the bar chart
+    var svg3 = dimple.newSvg("#top-ten-commits-by-author", "95%", "95%");
+    var chart3 = new dimple.chart(svg3, data3.toArray());
+    chart3.setBounds(margin.left, margin.top, width - 75, 425);
+    chart3.addCategoryAxis("x", "author");
+    chart3.addMeasureAxis("y", "size");
+    chart3.axes[1].tickFormat = ',';
+    chart3.axes[1].title = 'percentage of changes';
+    chart3.axes[1].showPercent = true;
+    console.log(chart3.axes[1]);
+    chart3.addSeries(["message", "id", "date", "ratio", "files", "size"], dimple.plot.bar);
+    chart3.draw(transitionTime);
 });

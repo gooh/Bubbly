@@ -32,5 +32,8 @@
         <div id="test-ratio-on-average">
             <h1>Average Test to Code Ratio by Author</h1>
         </div>
+        <div id="top-ten-commits-by-author">
+            <h1>Top Ten Commits By Author and Size</h1>
+        </div>
     </body>
 </html>
